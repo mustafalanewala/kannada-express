@@ -40,7 +40,7 @@ export default function Navbar() {
                 key={category}
                 href={`/category/${slugifyCategory(category)}`}
                 className={cn(
-                  "font-medium text-sm whitespace-nowrap transition-colors duration-200",
+                  "font-medium text-base whitespace-nowrap transition-colors duration-200",
                   "text-black hover:text-orange-600"
                 )}
               >
@@ -65,17 +65,42 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden flex flex-col space-y-2 py-4 border-t border-orange-500">
-            {categories.map((category) => (
+          <div className="flex flex-col space-y-3 py-4 border-t border-orange-200">
+            <div className="md:hidden">
+              {categories.map((category) => (
+                <Link
+                  key={category}
+                  href={`/category/${slugifyCategory(category)}`}
+                  className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {category}
+                </Link>
+              ))}
+            </div>
+            <div className="border-t border-orange-200 pt-3 mt-3 space-y-3">
               <Link
-                key={category}
-                href={`/category/${slugifyCategory(category)}`}
-                className="font-medium text-sm text-black hover:text-orange-600 transition-colors duration-200"
+                href="/about"
+                className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {category}
+                ನಮ್ಮ ಬಗ್ಗೆ
               </Link>
-            ))}
+              <Link
+                href="/privacy"
+                className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ಗೌಪ್ಯತಾ ನೀತಿ
+              </Link>
+              <Link
+                href="/contact"
+                className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ಸಂಪರ್ಕ
+              </Link>
+            </div>
           </div>
         )}
       </div>
