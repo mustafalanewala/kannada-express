@@ -2,7 +2,6 @@
 
 import { use } from "react";
 import useSWR from "swr";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { fetcher } from "@/lib/fetcher";
 import type { NewsItem } from "@/lib/types";
 import {
