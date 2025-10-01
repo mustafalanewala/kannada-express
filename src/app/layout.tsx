@@ -4,12 +4,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "MyStartup News - Latest News & Updates",
+  title: "KannadaExpress",
   description:
-    "Your trusted source for the latest news across business, technology, sports, and world events.",
+    "KannadaExpress is your go-to source for the latest news and updates in the tech world. Stay informed with our comprehensive coverage of technology trends, product launches, and industry insights.",
   keywords:
-    "news, business, technology, sports, world, economy, politics, general",
-  authors: [{ name: "MyStartup News Team" }],
+    "technology, news, tech trends, product launches, industry insights",
+  authors: [{ name: "KannadaExpress Team" }],
 };
 
 export default function RootLayout({

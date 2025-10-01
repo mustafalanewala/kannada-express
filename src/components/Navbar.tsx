@@ -17,7 +17,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-gray-800 shadow-md sticky top-0 z-50">
+    <nav className="bg-gray-50 shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top section with logo, categories, and menu */}
         <div className="flex justify-between md:grid md:grid-cols-3 items-center py-4">
@@ -25,7 +25,7 @@ export default function Navbar() {
             <Link href="/" className="flex items-center">
               <Image
                 src="/logo.png"
-                alt="News Logo"
+                alt="ಸುದ್ದಿ ಲೋಗೋ"
                 width={250}
                 height={60}
                 className="h-auto"
@@ -41,7 +41,7 @@ export default function Navbar() {
                 href={`/category/${slugifyCategory(category)}`}
                 className={cn(
                   "font-medium text-sm whitespace-nowrap transition-colors duration-200",
-                  "text-white hover:text-accent-purple"
+                  "text-black hover:text-orange-600"
                 )}
               >
                 {category}
@@ -52,7 +52,7 @@ export default function Navbar() {
           <div className="justify-self-end">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-white hover:text-accent-purple"
+              className="text-black hover:text-orange-600"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -65,12 +65,12 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden flex flex-col space-y-2 py-4 border-t border-gray-600">
+          <div className="md:hidden flex flex-col space-y-2 py-4 border-t border-orange-500">
             {categories.map((category) => (
               <Link
                 key={category}
                 href={`/category/${slugifyCategory(category)}`}
-                className="font-medium text-sm text-white hover:text-accent-purple transition-colors duration-200"
+                className="font-medium text-sm text-black hover:text-orange-600 transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {category}

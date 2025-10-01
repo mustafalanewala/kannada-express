@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Linkedin } from "lucide-react";
-
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -11,7 +8,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-center items-center">
           <p className="text-gray-300 text-sm">
-            © {currentYear} MyStartup News. All rights reserved.
+            © {currentYear} ಕನ್ನಡ ಎಕ್ಸ್‌ಪ್ರೆಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು
+            ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.
           </p>
         </div>
       </div>
