@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetcher } from "@/lib/fetcher";
 import { NewsItem } from "@/lib/types";
+import Ad from "./Ad";
 
 export default function BreakingNews() {
   const [breakingNews, setBreakingNews] = useState<NewsItem[]>([]);
@@ -113,6 +114,11 @@ export default function BreakingNews() {
             </Link>
           ))}
         </div>
+      </div>
+
+      {/* Bottom Ad Slot */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <Ad slot="breaking-news-bottom" format="rectangle" />
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { formatDate, slugifyCategory } from "@/lib/news-utils";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import Ad from "@/components/Ad";
 
 export default function NewsDetailPage({
   params,
@@ -212,6 +213,11 @@ export default function NewsDetailPage({
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Article Ad Slot */}
+        <div className="mb-12">
+          <Ad slot="article-middle" format="rectangle" />
         </div>
 
         {/* Article Footer */}

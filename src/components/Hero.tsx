@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetcher } from "@/lib/fetcher";
 import { NewsItem } from "@/lib/types";
+import Ad from "./Ad";
 
 export default function Hero() {
   const [news, setNews] = useState<NewsItem[]>([]);
