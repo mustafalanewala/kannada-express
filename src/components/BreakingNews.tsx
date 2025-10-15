@@ -14,14 +14,13 @@ export default function BreakingNews() {
   // Get breaking news (most recent 5)
   const getBreakingNews = () => {
     if (!data?.data?.news) return [];
-    
+
     const allNews = data.data.news;
     // Sort by date (most recent first) and take top 5
     return allNews
       .sort(
         (a, b) =>
-          new Date(b.insert_Date).getTime() -
-          new Date(a.insert_Date).getTime()
+          new Date(b.insert_Date).getTime() - new Date(a.insert_Date).getTime()
       )
       .slice(0, 5);
   };

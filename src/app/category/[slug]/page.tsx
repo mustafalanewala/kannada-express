@@ -165,7 +165,7 @@ export default function CategoryPage({
                       </span>
                     </div>
 
-                                      <Link href={`/news/${encodeURIComponent(article.slug)}`}>
+                    <Link href={`/news/${encodeURIComponent(article.slug)}`}>
                       <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-orange-600 transition-colors duration-200 line-clamp-2 leading-tight">
                         {article.news_Title}
                       </h3>

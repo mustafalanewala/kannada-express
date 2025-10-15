@@ -43,12 +43,15 @@ export default function NewsDetailPage({
   }
 
   const newsItem = data?.data?.news?.find((item) => {
-    console.log('Comparing:', item.slug, 'with', decodedSlug);
+    console.log("Comparing:", item.slug, "with", decodedSlug);
     return item.slug === decodedSlug;
   });
 
-  console.log('News item found:', newsItem);
-  console.log('Available slugs:', data?.data?.news?.map(item => item.slug));
+  console.log("News item found:", newsItem);
+  console.log(
+    "Available slugs:",
+    data?.data?.news?.map((item) => item.slug)
+  );
 
   if (!newsItem) {
     notFound();
