@@ -2,35 +2,30 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { NewsItem } from "@/lib/types";
 import Ad from "./Ad";
+import Image from "next/image";
 
 export default function Hero() {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, error, isLoading } = useSWR("news-data", fetcher);
 
-  useEffect(() => {
-    const loadNews = async () => {
-      try {
-        const data = await fetcher("/data/data.json");
-        const allNews = Array.isArray(data) ? data : [];
+  // Get random news items from the data
+  const getNews = () => {
+    if (!data?.data?.news) return [];
 
-        // Function to get random unique news items
-        const getRandomNews = (newsArray: NewsItem[], count: number) => {
-          const shuffled = [...newsArray].sort(() => 0.5 - Math.random());
-          return shuffled.slice(0, Math.min(count, newsArray.length));
-        };
-
-        setNews(getRandomNews(allNews, 8));
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to load news:", error);
-        setLoading(false);
-      }
+    const allNews = data.data.news;
+    // Function to get random unique news items
+    const getRandomNews = (newsArray: NewsItem[], count: number) => {
+      const shuffled = [...newsArray].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, Math.min(count, newsArray.length));
     };
-    loadNews();
-  }, []);
+
+    return getRandomNews(allNews, 8);
+  };
+
+  const news = getNews();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("kn-IN", {
@@ -40,7 +35,7 @@ export default function Hero() {
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center">
         <div className="text-center">
@@ -83,8 +78,8 @@ export default function Hero() {
           <div className="lg:col-span-8 space-y-6">
             {news.slice(0, 2).map((item, idx) => (
               <Link
-                key={item.News_Id}
-                href={`/news/${item.Slug}`}
+                key={item.news_Id}
+                href={`/news/${encodeURIComponent(item.slug)}`}
                 className="block group"
               >
                 <div
@@ -93,10 +88,11 @@ export default function Hero() {
                   }`}
                 >
                   <div className="relative h-full overflow-hidden">
-                    <img
-                      src={item.Image}
-                      alt={item.News_Title}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    <Image
+                      src={item.image}
+                      alt={item.news_Title}
+                      fill
+                      className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -110,21 +106,21 @@ export default function Hero() {
                             : "text-xl md:text-2xl"
                         }`}
                       >
-                        {item.News_Title}
+                        {item.news_Title}
                       </h2>
                       <p
                         className={`text-gray-200 line-clamp-2 mb-3 ${
                           idx === 0 ? "text-base" : "text-sm"
                         }`}
                       >
-                        {item.News_Content}
+                        {item.news_Content}
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-300">
-                          {item.News_Source}
+                          {item.news_Source}
                         </span>
                         <span className="text-sm text-gray-300">
-                          {formatDate(item.Insert_Date)}
+                          {formatDate(item.insert_Date)}
                         </span>
                       </div>
                     </div>
@@ -138,28 +134,29 @@ export default function Hero() {
           <div className="lg:col-span-4 space-y-6">
             {news.slice(2, 4).map((item) => (
               <Link
-                key={item.News_Id}
-                href={`/news/${item.Slug}`}
+                key={item.news_Id}
+                href={`/news/${encodeURIComponent(item.slug)}`}
                 className="block group"
               >
                 <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full">
                   <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={item.Image}
-                      alt={item.News_Title}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    <Image
+                      src={item.image}
+                      alt={item.news_Title}
+                      fill
+                      className="object-cover transform group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-5">
                     <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
-                      {item.News_Title}
+                      {item.news_Title}
                     </h3>
                     <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                      {item.News_Content}
+                      {item.news_Content}
                     </p>
                     <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>{item.News_Source}</span>
-                      <span>{formatDate(item.Insert_Date)}</span>
+                      <span>{item.news_Source}</span>
+                      <span>{formatDate(item.insert_Date)}</span>
                     </div>
                   </div>
                 </div>
@@ -172,8 +169,8 @@ export default function Hero() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {news.slice(4, 8).map((item, idx) => (
             <Link
-              key={item.News_Id}
-              href={`/news/${item.Slug}`}
+              key={item.news_Id}
+              href={`/news/${encodeURIComponent(item.slug)}`}
               className="group"
             >
               <div
@@ -181,27 +178,28 @@ export default function Hero() {
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={item.Image}
-                    alt={item.News_Title}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  <Image
+                    src={item.image}
+                    alt={item.news_Title}
+                    fill
+                    className="object-cover transform group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-3 right-3">
                     <span className="inline-block px-3 py-1 bg-orange-600 text-white text-xs font-semibold rounded-full shadow-lg">
-                      {item.Categrory_Name}
+                      {item.categrory_Name}
                     </span>
                   </div>
                 </div>
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
-                    {item.News_Title}
+                    {item.news_Title}
                   </h3>
                   <p className="text-sm text-gray-600 line-clamp-3 mb-3">
-                    {item.News_Content}
+                    {item.news_Content}
                   </p>
                   <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-100">
-                    <span className="font-medium">{item.News_Source}</span>
-                    <span>{formatDate(item.Insert_Date)}</span>
+                    <span className="font-medium">{item.news_Source}</span>
+                    <span>{formatDate(item.insert_Date)}</span>
                   </div>
                 </div>
               </div>
@@ -212,29 +210,33 @@ export default function Hero() {
         {/* Last Card - Full Width */}
         {news[7] && (
           <div className="mt-6">
-            <Link href={`/news/${news[7].Slug}`} className="block group">
+            <Link
+              href={`/news/${encodeURIComponent(news[7].slug)}`}
+              className="block group"
+            >
               <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="relative h-64 md:h-auto overflow-hidden">
-                    <img
-                      src={news[7].Image}
-                      alt={news[7].News_Title}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    <Image
+                      src={news[7].image}
+                      alt={news[7].news_Title}
+                      fill
+                      className="object-cover transform group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-8 flex flex-col justify-center">
                     <span className="inline-block w-fit px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold mb-4">
-                      {news[7].Categrory_Name}
+                      {news[7].categrory_Name}
                     </span>
                     <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
-                      {news[7].News_Title}
+                      {news[7].news_Title}
                     </h3>
                     <p className="text-lg text-gray-600 mb-6 line-clamp-3">
-                      {news[7].News_Content}
+                      {news[7].news_Content}
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span className="font-medium">{news[7].News_Source}</span>
-                      <span>{formatDate(news[7].Insert_Date)}</span>
+                      <span className="font-medium">{news[7].news_Source}</span>
+                      <span>{formatDate(news[7].insert_Date)}</span>
                     </div>
                   </div>
                 </div>

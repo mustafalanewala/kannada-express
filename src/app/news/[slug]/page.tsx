@@ -17,11 +17,9 @@ export default function NewsDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
+  const decodedSlug = decodeURIComponent(slug);
 
-  const { data, error, isLoading } = useSWR<NewsItem[]>(
-    "/data/data.json",
-    fetcher
-  );
+  const { data, error, isLoading } = useSWR("news-data", fetcher);
 
   if (isLoading) {
     return (
@@ -44,17 +42,23 @@ export default function NewsDetailPage({
     );
   }
 
-  const newsItem = data.find((item) => item.Slug === slug);
+  const newsItem = data?.data?.news?.find((item) => {
+    console.log('Comparing:', item.slug, 'with', decodedSlug);
+    return item.slug === decodedSlug;
+  });
+
+  console.log('News item found:', newsItem);
+  console.log('Available slugs:', data?.data?.news?.map(item => item.slug));
 
   if (!newsItem) {
     notFound();
   }
 
-  const relatedNews = data
-    .filter(
+  const relatedNews = data?.data?.news
+    ?.filter(
       (item) =>
-        item.Categrory_Name === newsItem.Categrory_Name &&
-        item.News_Id !== newsItem.News_Id
+        item.categrory_Name === newsItem.categrory_Name &&
+        item.news_Id !== newsItem.news_Id
     )
     .slice(0, 4);
 
@@ -97,10 +101,10 @@ export default function NewsDetailPage({
               />
             </svg>
             <Link
-              href={`/category/${slugifyCategory(newsItem.Categrory_Name)}`}
+              href={`/category/${slugifyCategory(newsItem.categrory_Name)}`}
               className="text-orange-600 hover:text-orange-800 transition-colors duration-300"
             >
-              {newsItem.Categrory_Name}
+              {newsItem.categrory_Name}
             </Link>
             <svg
               className="w-4 h-4 text-gray-400"
@@ -116,7 +120,7 @@ export default function NewsDetailPage({
               />
             </svg>
             <span className="text-gray-600 truncate">
-              {newsItem.News_Title}
+              {newsItem.news_Title}
             </span>
           </nav>
         </div>
@@ -128,27 +132,27 @@ export default function NewsDetailPage({
         <header className="mb-8">
           <div className="flex items-center space-x-2 mb-4">
             <span className="px-3 py-1 bg-orange-600 text-white text-sm font-medium rounded-full">
-              {newsItem.Categrory_Name}
+              {newsItem.categrory_Name}
             </span>
             <span className="text-gray-500 text-sm">
-              {formatDate(newsItem.Insert_Date)}
+              {formatDate(newsItem.insert_Date)}
             </span>
           </div>
 
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-            {newsItem.News_Title}
+            {newsItem.news_Title}
           </h1>
 
           <div className="flex items-center justify-between border-b border-gray-200 pb-6">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
                 <span className="text-orange-600 font-bold text-sm">
-                  {newsItem.News_Source.charAt(0)}
+                  {newsItem.news_Source.charAt(0)}
                 </span>
               </div>
               <div>
                 <p className="font-semibold text-gray-900">
-                  {newsItem.News_Source}
+                  {newsItem.news_Source}
                 </p>
                 <p className="text-sm text-gray-600">News Source</p>
               </div>
@@ -159,8 +163,8 @@ export default function NewsDetailPage({
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
-                      title: newsItem.News_Title,
-                      text: newsItem.News_Content.substring(0, 100) + "...",
+                      title: newsItem.news_Title,
+                      text: newsItem.news_Content.substring(0, 100) + "...",
                       url: window.location.href,
                     });
                   } else {
@@ -192,8 +196,8 @@ export default function NewsDetailPage({
         <div className="mb-8">
           <div className="relative h-64 lg:h-96 rounded-xl overflow-hidden shadow-lg">
             <Image
-              src={newsItem.Image}
-              alt={newsItem.News_Title}
+              src={newsItem.image}
+              alt={newsItem.news_Title}
               fill
               className="object-cover"
               priority
@@ -205,7 +209,7 @@ export default function NewsDetailPage({
         <div className="prose prose-lg max-w-none mb-12">
           <div className="bg-white rounded-xl p-8 shadow-sm border border-orange-100">
             <div className="text-gray-800 leading-relaxed text-lg">
-              {newsItem.News_Content.split("।").map((sentence, index) => (
+              {newsItem.news_Content.split("।").map((sentence, index) => (
                 <p key={index} className="mb-4">
                   {sentence.trim()}
                   {sentence.trim() && "।"}
@@ -226,16 +230,16 @@ export default function NewsDetailPage({
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-500">Published on</span>
               <span className="font-semibold text-gray-900">
-                {formatDate(newsItem.Insert_Date)}
+                {formatDate(newsItem.insert_Date)}
               </span>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500">Category:</span>
               <Link
-                href={`/category/${slugifyCategory(newsItem.Categrory_Name)}`}
+                href={`/category/${slugifyCategory(newsItem.categrory_Name)}`}
                 className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-200 transition-colors duration-200"
               >
-                {newsItem.Categrory_Name}
+                {newsItem.categrory_Name}
               </Link>
             </div>
           </div>
@@ -250,33 +254,33 @@ export default function NewsDetailPage({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {relatedNews.map((article) => (
                 <Link
-                  key={article.News_Id}
-                  href={`/news/${article.Slug}`}
+                  key={article.news_Id}
+                  href={`/news/${encodeURIComponent(article.slug)}`}
                   className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover:-translate-y-1"
                 >
                   <div className="relative h-40 overflow-hidden">
                     <Image
-                      src={article.Image}
-                      alt={article.News_Title}
+                      src={article.image}
+                      alt={article.news_Title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-2 left-2">
                       <span className="px-2 py-1 bg-orange-600 text-white text-xs font-medium rounded">
-                        {article.Categrory_Name}
+                        {article.categrory_Name}
                       </span>
                     </div>
                   </div>
                   <div className="p-4">
                     <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors duration-200">
-                      {article.News_Title}
+                      {article.news_Title}
                     </h3>
                     <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                      {article.News_Content}
+                      {article.news_Content}
                     </p>
                     <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>{article.News_Source}</span>
-                      <span>{formatDate(article.Insert_Date)}</span>
+                      <span>{article.news_Source}</span>
+                      <span>{formatDate(article.insert_Date)}</span>
                     </div>
                   </div>
                 </Link>

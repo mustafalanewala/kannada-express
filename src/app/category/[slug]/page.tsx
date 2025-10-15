@@ -20,10 +20,7 @@ export default function CategoryPage({
 }) {
   const { slug } = use(params);
 
-  const { data, error, isLoading } = useSWR<NewsItem[]>(
-    "/data/data.json",
-    fetcher
-  );
+  const { data, error, isLoading } = useSWR("news-data", fetcher);
 
   if (isLoading) {
     return (
@@ -76,8 +73,8 @@ export default function CategoryPage({
     );
   }
 
-  const categoryName = getCategoryFromSlug(data, slug);
-  const categoryNews = filterByCategory(data, slug);
+  const categoryName = getCategoryFromSlug(data?.data?.news || [], slug);
+  const categoryNews = filterByCategory(data?.data?.news || [], slug);
 
   if (categoryNews.length === 0) {
     notFound();
@@ -136,7 +133,7 @@ export default function CategoryPage({
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {categoryNews.map((article, index) => (
                 <div
-                  key={article.News_Id}
+                  key={article.news_Id}
                   className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
                   style={{
                     animationDelay: `${index * 100}ms`,
@@ -146,8 +143,8 @@ export default function CategoryPage({
                   {/* Image Section */}
                   <div className="relative h-48 overflow-hidden">
                     <Image
-                      src={article.Image}
-                      alt={article.News_Title}
+                      src={article.image}
+                      alt={article.news_Title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -155,7 +152,7 @@ export default function CategoryPage({
                     {/* Category Badge */}
                     <div className="absolute top-3 left-3">
                       <span className="px-2 py-1 bg-orange-600 text-white text-xs font-medium rounded-md">
-                        {article.Categrory_Name}
+                        {article.categrory_Name}
                       </span>
                     </div>
                   </div>
@@ -164,26 +161,26 @@ export default function CategoryPage({
                   <div className="p-5">
                     <div className="mb-2">
                       <span className="text-gray-500 text-xs font-medium">
-                        {formatDate(article.Insert_Date)}
+                        {formatDate(article.insert_Date)}
                       </span>
                     </div>
 
-                    <Link href={`/news/${article.Slug}`}>
+                                      <Link href={`/news/${encodeURIComponent(article.slug)}`}>
                       <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-orange-600 transition-colors duration-200 line-clamp-2 leading-tight">
-                        {article.News_Title}
+                        {article.news_Title}
                       </h3>
                     </Link>
 
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
-                      {article.News_Content}
+                      {article.news_Content}
                     </p>
 
                     <div className="flex items-center justify-between">
                       <span className="text-gray-500 text-xs font-medium">
-                        {article.News_Source}
+                        {article.news_Source}
                       </span>
                       <Link
-                        href={`/news/${article.Slug}`}
+                        href={`/news/${encodeURIComponent(article.slug)}`}
                         className="text-orange-600 hover:text-orange-800 text-xs font-semibold transition-colors duration-200 flex items-center"
                       >
                         Read

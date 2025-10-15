@@ -2,40 +2,33 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { NewsItem } from "@/lib/types";
 import Ad from "./Ad";
+import Image from "next/image";
 
 export default function BreakingNews() {
-  const [breakingNews, setBreakingNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, error, isLoading } = useSWR("news-data", fetcher);
 
-  useEffect(() => {
-    const loadBreakingNews = async () => {
-      try {
-        const data = await fetcher("/data/data.json");
-        const allNews = Array.isArray(data) ? data : [];
+  // Get breaking news (most recent 5)
+  const getBreakingNews = () => {
+    if (!data?.data?.news) return [];
+    
+    const allNews = data.data.news;
+    // Sort by date (most recent first) and take top 5
+    return allNews
+      .sort(
+        (a, b) =>
+          new Date(b.insert_Date).getTime() -
+          new Date(a.insert_Date).getTime()
+      )
+      .slice(0, 5);
+  };
 
-        // Sort by date (most recent first) and take top 5
-        const sortedNews = allNews
-          .sort(
-            (a, b) =>
-              new Date(b.Insert_Date).getTime() -
-              new Date(a.Insert_Date).getTime()
-          )
-          .slice(0, 5);
+  const breakingNews = getBreakingNews();
 
-        setBreakingNews(sortedNews);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to load breaking news:", error);
-        setLoading(false);
-      }
-    };
-    loadBreakingNews();
-  }, []);
-
-  if (loading || breakingNews.length === 0) {
+  if (isLoading || breakingNews.length === 0) {
     return null;
   }
 
@@ -70,20 +63,21 @@ export default function BreakingNews() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {breakingNews.map((news, index) => (
             <Link
-              key={news.News_Id}
-              href={`/news/${news.Slug}`}
+              key={news.news_Id}
+              href={`/news/${encodeURIComponent(news.slug)}`}
               className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src={news.Image}
-                  alt={news.News_Title}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                <Image
+                  src={news.image}
+                  alt={news.news_Title}
+                  fill
+                  className="object-cover transform group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3">
                   <span className="px-2 py-1 bg-orange-600 text-white text-xs font-bold rounded-full shadow-lg">
-                    {news.Categrory_Name}
+                    {news.categrory_Name}
                   </span>
                 </div>
                 <div className="absolute top-3 right-3">
@@ -96,15 +90,15 @@ export default function BreakingNews() {
               </div>
               <div className="p-4">
                 <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors duration-200">
-                  {news.News_Title}
+                  {news.news_Title}
                 </h3>
                 <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                  {news.News_Content.substring(0, 100)}...
+                  {news.news_Content.substring(0, 100)}...
                 </p>
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span className="font-medium">{news.News_Source}</span>
+                  <span className="font-medium">{news.news_Source}</span>
                   <span>
-                    {new Date(news.Insert_Date).toLocaleDateString("kn-IN", {
+                    {new Date(news.insert_Date).toLocaleDateString("kn-IN", {
                       month: "short",
                       day: "numeric",
                     })}

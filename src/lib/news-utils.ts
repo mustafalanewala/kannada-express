@@ -37,21 +37,21 @@ export function getCategoryNameFromSlug(slug: string): string {
 
 export function getCategories(items: NewsItem[]) {
   const set = new Set(
-    items.filter((i) => i.Active_Flag !== false && i.Categrory_Name?.trim()).map((i) => i.Categrory_Name.trim()),
+    items.filter((i) => i.categrory_Name?.trim()).map((i) => i.categrory_Name.trim()),
   )
   return Array.from(set).sort()
 }
 
 export function getBySlug(items: NewsItem[], slug: string) {
-  return items.find((i) => i.Slug === slug && i.Active_Flag !== false)
+  return items.find((i) => i.slug === slug)
 }
 
 export function filterByCategory(items: NewsItem[], categorySlug: string) {
-  return items.filter((i) => i.Active_Flag !== false && slugifyCategory(i.Categrory_Name) === categorySlug)
+  return items.filter((i) => slugifyCategory(i.categrory_Name) === categorySlug)
 }
 
 export function getCategoryFromSlug(items: NewsItem[], categorySlug: string) {
   // First try to find by exact category name match
-  const found = items.find((i) => slugifyCategory(i.Categrory_Name) === categorySlug);
-  return found?.Categrory_Name || getCategoryNameFromSlug(categorySlug);
+  const found = items.find((i) => slugifyCategory(i.categrory_Name) === categorySlug);
+  return found?.categrory_Name || getCategoryNameFromSlug(categorySlug);
 }

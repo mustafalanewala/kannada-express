@@ -10,10 +10,8 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
-  const { data } = useSWR("/data/data.json", fetcher);
-  const categories = getCategories(
-    Array.isArray(data) ? data : data?.news || []
-  );
+  const { data } = useSWR("news-data", fetcher);
+  const categories = getCategories(data?.data?.news || []);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
