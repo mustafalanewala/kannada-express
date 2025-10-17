@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import type { NewsItem } from "@/lib/types";
@@ -12,6 +13,7 @@ import {
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import Pagination from "@/components/Pagination";
 
 export default function CategoryPage({
   params,
@@ -19,8 +21,15 @@ export default function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const { data, error, isLoading } = useSWR("news-data", fetcher);
+
+  // Reset to page 1 when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [slug]);
 
   if (isLoading) {
     return (
@@ -80,6 +89,21 @@ export default function CategoryPage({
     notFound();
   }
 
+  // Pagination logic
+  const totalItems = categoryNews.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedNews = categoryNews.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // Scroll to top when page changes
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
       {/* Header Section */}
@@ -129,9 +153,17 @@ export default function CategoryPage({
 
         {/* Content Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-          {categoryNews.length > 0 ? (
+          {/* Results Info */}
+          <div className="mb-6">
+            <p className="text-gray-600 text-sm">
+              Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of{" "}
+              {totalItems} articles
+            </p>
+          </div>
+
+          {paginatedNews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {categoryNews.map((article, index) => (
+              {paginatedNews.map((article, index) => (
                 <div
                   key={article.news_Id}
                   className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
@@ -209,6 +241,15 @@ export default function CategoryPage({
                 No articles found in this category.
               </div>
             </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           )}
         </div>
       </div>
