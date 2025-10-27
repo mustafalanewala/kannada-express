@@ -45,6 +45,34 @@ export default function Navbar() {
                 {category}
               </Link>
             ))}
+            {/* Static section links */}
+            <Link
+              href="/gallery"
+              className={cn(
+                "font-medium text-base whitespace-nowrap transition-colors duration-200",
+                "text-black hover:text-orange-600"
+              )}
+            >
+              ಗ್ಯಾಲರಿ
+            </Link>
+            <Link
+              href="/video"
+              className={cn(
+                "font-medium text-base whitespace-nowrap transition-colors duration-200",
+                "text-black hover:text-orange-600"
+              )}
+            >
+              ವೀಡಿಯೊ
+            </Link>
+            <Link
+              href="/blog"
+              className={cn(
+                "font-medium text-base whitespace-nowrap transition-colors duration-200",
+                "text-black hover:text-orange-600"
+              )}
+            >
+              ಬ್ಲಾಗ್
+            </Link>
           </div>
 
           <div className="justify-self-end">
@@ -77,6 +105,28 @@ export default function Navbar() {
               ))}
             </div>
             <div className="border-t border-orange-200 pt-3 mt-3 space-y-3">
+              {/* Static links for gallery / video / blog on mobile */}
+              <Link
+                href="/gallery"
+                className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ಗ್ಯಾಲರಿ
+              </Link>
+              <Link
+                href="/video"
+                className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ವೀಡಿಯೊ
+              </Link>
+              <Link
+                href="/blog"
+                className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ಬ್ಲಾಗ್
+              </Link>
               <Link
                 href="/about"
                 className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"
