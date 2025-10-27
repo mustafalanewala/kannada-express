@@ -1,5 +1,13 @@
 import Image from "next/image";
 
+function normalizeUrl(url?: string) {
+  if (!url) return null;
+  // some API values may omit the leading 'h' (e.g. 'ttps://...') or be protocol-relative
+  if (url.startsWith("ttps://")) return "h" + url;
+  if (url.startsWith("//")) return "https:" + url;
+  return url;
+}
+
 async function fetchData() {
   const res = await fetch(
     "https://newsapi.timesmed.com/WebAPI/getnewslist?siteId=31&language=Kannada",
@@ -24,14 +32,20 @@ export default async function Page() {
             className="bg-white rounded shadow p-4"
           >
             <div className="w-full h-48 relative mb-3 bg-gray-100">
-              <Image
-                src={g.image}
-                alt={g.galleryMaster_Title}
-                fill
-                className="object-cover rounded"
-                sizes="(max-width: 1024px) 100vw, 33vw"
-                priority={false}
-              />
+              {normalizeUrl(g.image) ? (
+                <Image
+                  src={normalizeUrl(g.image)!}
+                  alt={g.galleryMaster_Title}
+                  fill
+                  className="object-cover rounded"
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                  priority={false}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ
+                </div>
+              )}
             </div>
             <h2 className="font-medium text-lg">{g.galleryMaster_Title}</h2>
             <p className="text-sm text-gray-600 mt-2">
