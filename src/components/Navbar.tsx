@@ -3,11 +3,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
+import { getCategories, slugifyCategory } from "@/lib/news-utils";
+import type { NewsItem } from "@/lib/types";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  const { data } = useSWR("news-data", fetcher);
+  const categories = data?.data?.news ? getCategories(data.data.news) : [];
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.category-dropdown')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-gray-50 shadow-md sticky top-0 z-50">
@@ -28,6 +49,38 @@ export default function Navbar() {
           </div>
 
           <div className="justify-self-center hidden md:flex space-x-8">
+            {/* Categories Dropdown */}
+            <div className="relative category-dropdown">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className={cn(
+                  "font-medium text-base whitespace-nowrap transition-colors duration-200 flex items-center",
+                  "text-black hover:text-orange-600"
+                )}
+              >
+                ವಿಭಾಗಗಳು
+                <ChevronDown className={cn(
+                  "ml-1 h-4 w-4 transition-transform duration-200",
+                  isDropdownOpen ? "rotate-180" : ""
+                )} />
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                  {categories.slice(0, 3).map((category) => (
+                    <Link
+                      key={category}
+                      href={`/category/${slugifyCategory(category)}`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-200"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      {category}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            
             <Link
               href="/gallery"
               className={cn(
@@ -75,6 +128,21 @@ export default function Navbar() {
         {isMobileMenuOpen && (
           <div className="flex flex-col space-y-3 py-4 border-t border-orange-200">
             <div className="md:hidden">
+              {/* Mobile Categories */}
+              <div className="mb-4">
+                <h3 className="font-medium text-gray-800 mb-2 px-2">ವಿಭಾಗಗಳು</h3>
+                {categories.slice(0, 3).map((category) => (
+                  <Link
+                    key={category}
+                    href={`/category/${slugifyCategory(category)}`}
+                    className="font-medium text-base text-black hover:text-orange-600 transition-colors duration-200 py-1 pl-4 block"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {category}
+                  </Link>
+                ))}
+              </div>
+              
               <Link
                 href="/gallery"
                 className="font-medium text-lg text-black hover:text-orange-600 transition-colors duration-200 py-2 block"

@@ -64,7 +64,7 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-400 mb-4 tracking-tight">
+          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-400 mb-4 tracking-tight">
             ಕನ್ನಡ ಎಕ್ಸ್‌ಪ್ರೆಸ್
           </h1>
           <p className="text-xl text-gray-700 max-w-2xl mx-auto">

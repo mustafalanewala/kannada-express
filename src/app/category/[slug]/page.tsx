@@ -21,6 +21,9 @@ export default function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
+  // The incoming slug from the URL may be percent-encoded (UTF-8 encoded Kannada).
+  // Decode it so our slug matching and display show human-readable Kannada text.
+  const decodedSlug = typeof slug === "string" ? decodeURIComponent(slug) : String(slug);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
@@ -82,11 +85,13 @@ export default function CategoryPage({
     );
   }
 
-  const categoryName = getCategoryFromSlug(data?.data?.news || [], slug);
-  const categoryNews = filterByCategory(data?.data?.news || [], slug);
+  const newsItems = data?.data?.news || [];
+  const categoryName = getCategoryFromSlug(newsItems, decodedSlug);
+  const categoryNews = filterByCategory(newsItems, decodedSlug);
 
   if (categoryNews.length === 0) {
-    notFound();
+    console.warn(`No news found for category slug: ${slug}`);
+    // Don't use notFound() immediately, show a proper error message instead
   }
 
   // Pagination logic
@@ -156,12 +161,13 @@ export default function CategoryPage({
           {/* Results Info */}
           <div className="mb-6">
             <p className="text-gray-600 text-sm">
-              Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of{" "}
-              {totalItems} articles
+              {totalItems === 0
+                ? `Showing 0 of 0 articles`
+                : `Showing ${startIndex + 1}-${Math.min(endIndex, totalItems)} of ${totalItems} articles`}
             </p>
           </div>
 
-          {paginatedNews.length > 0 ? (
+          {categoryNews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {paginatedNews.map((article, index) => (
                 <div
@@ -237,9 +243,46 @@ export default function CategoryPage({
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="text-gray-500 text-lg">
-                No articles found in this category.
+              <div className="w-16 h-16 mx-auto mb-6 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-orange-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
               </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                No articles found
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Sorry, we couldn't find any articles in the "{categoryName}" category.
+              </p>
+              <Link
+                href="/"
+                className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors duration-300"
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                Back to Home
+              </Link>
             </div>
           )}
 
